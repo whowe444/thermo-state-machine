@@ -1,10 +1,12 @@
 #include "state_machine.hh"
 #include <chrono>
 
+const int StateMachine::DEFAULT_TEMP(70);
+
 StateMachine::StateMachine()
     :
-      currentTemperature(70), // start off the thermostat at a normal temp
-      desiredTemperature(70), // match the current so that the thermo is in Idle.
+      currentTemperature(StateMachine::DEFAULT_TEMP), // start off the thermostat at a normal temp
+      desiredTemperature(StateMachine::DEFAULT_TEMP), // match the current so that the thermo is in Idle.
       currentState(State::Idle),
       running(false)
 {

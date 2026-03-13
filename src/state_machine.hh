@@ -12,6 +12,8 @@ enum class State {
 
 class StateMachine {
 
+static const int DEFAULT_TEMP;
+
 public:
 
     // Constructor 

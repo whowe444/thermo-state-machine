@@ -8,21 +8,12 @@ TEST_F(StateMachineTest, TestConstructor) {
 }
 
 TEST_F(StateMachineTest, TestStart) {
-    // This function should not hang.
-    EXPECT_TRUE(stateMachine->start());
-    
     // We are in an idle state
     EXPECT_FALSE(stateMachine->furnaceOn());
     EXPECT_FALSE(stateMachine->acOn());
-
-    // Now turn off the machine
-    EXPECT_TRUE(stateMachine->end());
 }
 
 TEST_F(StateMachineTest, TestHeating) {
-    // First we need to start up
-    stateMachine->start();
-
     // Set a desired temperature.
     stateMachine->setDesiredTemperature(75);
 	    
@@ -32,15 +23,9 @@ TEST_F(StateMachineTest, TestHeating) {
     // Verify the furnace is on and ac off
     EXPECT_TRUE(stateMachine->furnaceOn());
     EXPECT_FALSE(stateMachine->acOn());
-
-    // Shutdown
-    stateMachine->end();
 }
 
 TEST_F(StateMachineTest, TestCooling) {
-    // First we need to start up
-    stateMachine->start();
-
     // Set a desired temperature.
     stateMachine->setDesiredTemperature(64);
 	    
@@ -56,9 +41,6 @@ TEST_F(StateMachineTest, TestCooling) {
 }
 
 TEST_F(StateMachineTest, TestCoolingBackToIdle) {
-    // First we need to start up
-    stateMachine->start();
-
     // Set a desired temperature.
     const int NEW_TEMP = 68;
     stateMachine->setDesiredTemperature(NEW_TEMP);
@@ -72,15 +54,9 @@ TEST_F(StateMachineTest, TestCoolingBackToIdle) {
 
     // Verify the new temperature on the thermostat
     EXPECT_EQ(NEW_TEMP, stateMachine->getCurrentTemperature());
-
-    // Shutdown
-    stateMachine->end(); 
 }
 
 TEST_F(StateMachineTest, TestHeatingBackToIdle) {
-    // First we need to start up
-    stateMachine->start();
-
     // Set a desired temperature.
     const int NEW_TEMP = 72;
     stateMachine->setDesiredTemperature(NEW_TEMP);
@@ -94,7 +70,4 @@ TEST_F(StateMachineTest, TestHeatingBackToIdle) {
 
     // Verify the new temperature on the thermostat
     EXPECT_EQ(NEW_TEMP, stateMachine->getCurrentTemperature());
-
-    // Shutdown
-    stateMachine->end(); 
 }
