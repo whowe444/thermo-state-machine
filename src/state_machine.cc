@@ -21,7 +21,8 @@ bool StateMachine::start() {
         this->transitionThread = std::thread(&StateMachine::transition, this);
         result = true;
     } catch (std::system_error& e) {
-	    std::cerr << "Transition Thread failed to start: " << e.what() << std::endl;
+	std::cerr << "Transition Thread failed to start: " << e.what() << std::endl;
+	result = false;
     }
 
     // Launch the behavior thread
@@ -29,7 +30,8 @@ bool StateMachine::start() {
         this->behaviorThread = std::thread(&StateMachine::behavior, this);
         result &= true;
     } catch (std::system_error& e) {
-	    std::cerr << "Behavior Thread failed to start: " << e.what() << std::endl;
+	std::cerr << "Behavior Thread failed to start: " << e.what() << std::endl;
+	result = false;
     }
 
     return result;
