@@ -35,9 +35,6 @@ TEST_F(StateMachineTest, TestCooling) {
     // Verify the ac is on and furnace is off
     EXPECT_TRUE(stateMachine->acOn());
     EXPECT_FALSE(stateMachine->furnaceOn());
-
-    // Shutdown
-    stateMachine->end();   
 }
 
 TEST_F(StateMachineTest, TestCoolingBackToIdle) {
