@@ -1,5 +1,4 @@
-#ifndef STATE_MACHINE_HH
-#define STATE_MACHINE_HH
+#pragma once
 
 #include <iostream>
 #include <thread>
@@ -18,15 +17,22 @@ public:
     // Constructor 
     StateMachine();
 
-    void start();
-    void end();
+    // Start up threads
+    bool start();
+    bool end();
 
+    // Sense current state
+    bool furnaceOn();
+    bool acOn();
+
+    // Interface with the thermostat
     int getCurrentTemperature();
     void setDesiredTemperature(const int desiredTemperature);
-    void transition();
-    void behavior();
 
 private:
+
+    void transition();
+    void behavior();
 
     std::atomic<int> currentTemperature;
     std::atomic<int> desiredTemperature;
@@ -36,5 +42,3 @@ private:
     std::thread behaviorThread;
 
 };
-
-#endif // STATE_MACHINE_HH

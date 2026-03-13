@@ -9,11 +9,10 @@ protected:
 
     std::shared_ptr<StateMachine> stateMachine;
 
-    StateMachineTest() {
-        stateMachine = std::make_shared<StateMachine>();
-    }
+    StateMachineTest() = default;
 
     void SetUp() override {
+        stateMachine = std::make_shared<StateMachine>();
     }
 
     void TearDown() override {
