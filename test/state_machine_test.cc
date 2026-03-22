@@ -42,7 +42,7 @@ TEST_F(StateMachineTest, TestCoolingBackToIdle) {
     const int NEW_TEMP = 68;
     stateMachine->setDesiredTemperature(NEW_TEMP);
 	    
-    // Sleep for 3 milliseconds
+    // Sleep for 3 seconds
     std::this_thread::sleep_for(std::chrono::seconds(3));
 
     // Verify the ac is on and furnace is off
@@ -58,7 +58,7 @@ TEST_F(StateMachineTest, TestHeatingBackToIdle) {
     const int NEW_TEMP = 72;
     stateMachine->setDesiredTemperature(NEW_TEMP);
 	    
-    // Sleep for 3 milliseconds
+    // Sleep for 3 seconds
     std::this_thread::sleep_for(std::chrono::seconds(3));
 
     // Verify the ac is on and furnace is off

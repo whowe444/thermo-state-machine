@@ -3,6 +3,8 @@
 #include <iostream>
 #include <thread>
 #include <atomic>
+#include <condition_variable>
+
 
 enum class State {
     Idle,
@@ -36,11 +38,15 @@ private:
     void transition();
     void behavior();
 
-    std::atomic<int> currentTemperature;
-    std::atomic<int> desiredTemperature;
-    std::atomic<State> currentState;
-    std::atomic<bool> running;
+    alignas(64) std::atomic<int> currentTemperature;
+    alignas(64) std::atomic<int> desiredTemperature;
+    alignas(64) std::atomic<State> currentState;
+    bool running;
+    bool dirty;
     std::thread transitionThread;
     std::thread behaviorThread;
+
+    std::condition_variable conditionVariable;
+    std::mutex conditionVariableMutex;
 
 };
