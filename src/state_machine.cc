@@ -8,14 +8,14 @@ StateMachine::StateMachine()
       currentTemperature(StateMachine::DEFAULT_TEMP), // start off the thermostat at a normal temp
       desiredTemperature(StateMachine::DEFAULT_TEMP), // match the current so that the thermo is in Idle.
       currentState(State::Idle),
-      running(false),
+      running(),
       dirty(false)
 {
 }
 
 bool StateMachine::start() {
     bool result = false;
-    this->running = true;
+    this->running.test_and_set();
 
     // Launch the transition thread
     try {
@@ -42,11 +42,9 @@ bool StateMachine::end() {
     bool result = false;
 
     // Tell the threads we are shutting down
-    {
-        std::lock_guard<std::mutex> lock(conditionVariableMutex);
-        this->running = false;
-    }
-    conditionVariable.notify_one();
+    this->running.clear();
+    this->dirty = true;
+    this->dirty.notify_one();
 
     // First let's shut down the transition thread
     try {
@@ -84,35 +82,26 @@ int StateMachine::getCurrentTemperature() {
 }
 
 void StateMachine::setDesiredTemperature(const int desiredTemperature) {
-    {
-        std::lock_guard<std::mutex> lock(conditionVariableMutex);
-        this->desiredTemperature = desiredTemperature;
-        this->dirty = true;
-    }
-    conditionVariable.notify_one();
+    this->desiredTemperature = desiredTemperature;
+    this->dirty = true;
+    this->dirty.notify_one();
 }
 
 void StateMachine::behavior() {
-    while (this->running) {
+    while (this->running.test()) {
 	    switch (this->currentState) {
             case State::Idle:
 	            std::cout << "Awaiting commands..." << std::endl;
 		        break;
 	        case State::CoolOn:
-                {
-                    std::lock_guard<std::mutex> lock(conditionVariableMutex);
-		            this->currentTemperature--;
-                    this->dirty = true;
-                }
-                conditionVariable.notify_one();
+		        this->currentTemperature--;
+                this->dirty = true;
+                this->dirty.notify_one();
 		        break;
 	        case State::HeatOn:
-                {
-                    std::lock_guard<std::mutex> lock(conditionVariableMutex);
-		            this->currentTemperature++;
-                    this->dirty = true;
-                }
-                conditionVariable.notify_one();
+		        this->currentTemperature++;
+                this->dirty = true;
+                this->dirty.notify_one();
 		        break;
 	        default:
 	            break;	
@@ -124,13 +113,12 @@ void StateMachine::behavior() {
 }
 
 void StateMachine::transition() {
-    while (this->running) {
-        std::unique_lock<std::mutex> lock(conditionVariableMutex);
-        conditionVariable.wait(lock, [this] {
-            return !this->running || dirty;
-        });
+    while (this->running.test()) {
+        // block until dirty is true
+        this->dirty.wait(false);
 
-        if (!this->running) break;
+        // Break out if we are no longer running
+        if (!this->running.test()) break;
 
 	    if (this->currentTemperature < this->desiredTemperature) {
 		    this->currentState = State::HeatOn;

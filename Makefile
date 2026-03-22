@@ -1,5 +1,5 @@
 CXX      := g++
-CXXFLAGS := -Wall -Wextra -fPIC -std=c++17
+CXXFLAGS := -Wall -Wextra -fPIC -std=c++20
 GTESTFLAGS = -I/usr/local/include  -L/usr/local/lib64 -lgtest -lgtest_main -lpthread
 
 SRC_DIR   := src
